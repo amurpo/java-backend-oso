@@ -1,5 +1,4 @@
 name: SonarQube Analysis
-
 on:
   push:
     branches:
@@ -9,17 +8,16 @@ on:
 jobs:
   sonar:
     runs-on: ubuntu-latest
-
     steps:
       - name: Check out the repository
         uses: actions/checkout@v3
-
+        
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
-
+          
       - name: Cache Maven packages
         uses: actions/cache@v3
         with:
@@ -27,13 +25,14 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven
-
+            
       - name: Build and Run SonarQube Analysis
-        run: mvn clean verify sonar:sonar \
-          -Dsonar.projectKey=${{ secrets.PROJECT_KEY }} \
-          -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+        run: >
+          mvn clean verify sonar:sonar 
+          -Dsonar.projectKey=${{ secrets.PROJECT_KEY }} 
+          -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} 
           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-
+        
       - name: Upload SonarQube Report
         if: failure()
         uses: actions/upload-artifact@v3
